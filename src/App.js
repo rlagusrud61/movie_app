@@ -1,88 +1,60 @@
 import React from "react";
 import PropTypes from "prop-types";
+import axios from "axios";
+import Movie from "./Movie";
+import "./App.css";
 
 class App extends React.Component {
   state = {
-    count: 0,
+    isLoading: true,
+    movies: [],
   };
 
-  add = () => {
-    this.setState((current) => ({ count: current.count + 1 }));
+  getMovies = async () => {
     {
-      /* It's not nice to use this.state.count (bad practice). You want to get the current state first with a function. 
-      Every time I call setState , React will call render function with the new state. With this.state, that won't happen.  */
+      /* Tell that it's gonna take some time with async() and await */
     }
-    console.log("added");
+    const {
+      data: {
+        data: { movies },
+      },
+    } = await axios.get(
+      "https://yts-proxy.now.sh/list_movies.json?sort_by=rating"
+    );
+    this.setState({ movies, isLoading: false });
   };
-
-  subtract = () => {
-    this.setState((current) => ({ count: current.count - 1 }));
-    console.log("subtracted");
-  };
-
   componentDidMount() {
-    console.log("Component rendered! yay");
+    this.getMovies();
   }
-  componentDidUpdate() {
-    console.log("Component was updated yay");
-  }
+
   render() {
-    console.log("I'm rendering here...");
+    const { isLoading, movies } = this.state;
     return (
-      <div>
-        <h1>The number is : {this.state.count}</h1>
-        <button onClick={this.add}>Add</button>
-        {/* this.add() will immediately call the function, this.add will only happen onClick*/}
-        <button onClick={this.subtract}>Subtract</button>
-        {/* If we add () after the functions, React will execute add() while executing render() and the return value is stored in onClick.
-        "this.add is just like a video, and this.add() is like pressing play." */}
-      </div>
+      <section class="container">
+        {isLoading ? (
+          <div class="loader">
+            <span class="loader__text">Loading...</span>
+          </div>
+        ) : (
+          <div class="movies">
+            {movies.map((movie) => {
+              console.log(movie);
+              return (
+                <Movie
+                  key={movie.id}
+                  id={movie.id}
+                  year={movie.year}
+                  title={movie.title}
+                  summary={movie.summary}
+                  poster={movie.medium_cover_image}
+                />
+              );
+            })}
+          </div>
+        )}
+      </section>
     );
   }
 }
-
-/** FOR STATIC DATA TYPES */
-
-// function Food({ name, picture, rating }) {
-//   return (
-//     <div>
-//       <h1>I am a {name}</h1>
-//       <h2>Rating : {rating}</h2>
-//       <img src={picture} />
-//     </div>
-//   );
-// }
-
-// Food.propTypes = {
-//   name: PropTypes.string.isRequired,
-//   picture: PropTypes.string.isRequired,
-//   rating: PropTypes.number.isRequired,
-// };
-
-// const foodILike = [
-//   {
-//     name: "김치찌개",
-//     image:
-//       "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fppss.kr%2Fwp-content%2Fuploads%2F2019%2F08%2F0-87.jpg&f=1&nofb=1",
-//     rating: 4.5,
-//   },
-//   {
-//     name: "마파두부",
-//     image:
-//       "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.ytimg.com%2Fvi%2F8Ei56Dj3z3g%2Fmaxresdefault.jpg&f=1&nofb=1",
-//     rating: 5,
-//   },
-// ];
-
-// function App() {
-//   return (
-//     <div>
-//       <h1>뭐먹을까요오오오</h1>
-//       {foodILike.map((dish) => (
-//         <Food name={dish.name} picture={dish.image} rating={dish.rating} />
-//       ))}
-//     </div>
-//   );
-// }
 
 export default App;
