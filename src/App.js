@@ -30,15 +30,15 @@ class App extends React.Component {
   render() {
     const { isLoading, movies } = this.state;
     return (
-      <section class="container">
+      <section className="container">
+        {/* We must write classNAME because React thinks we mean actual class, while it's JS class  */}
         {isLoading ? (
-          <div class="loader">
+          <div className="loader">
             <span class="loader__text">Loading...</span>
           </div>
         ) : (
-          <div class="movies">
+          <div className="movies">
             {movies.map((movie) => {
-              console.log(movie);
               return (
                 <Movie
                   key={movie.id}
@@ -47,6 +47,7 @@ class App extends React.Component {
                   title={movie.title}
                   summary={movie.summary}
                   poster={movie.medium_cover_image}
+                  genres={movie.genres}
                 />
               );
             })}
